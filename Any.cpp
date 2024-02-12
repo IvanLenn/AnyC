@@ -27,37 +27,51 @@ Any::Any(void* x) {
     memcpy(static_cast<void*>(&(Any::data)), &x, sizeof(void*));
 }
 
-bool Any::IsInt() {
+bool Any::IsInt() const {
     return (Any::data & INT_TAG) == INT_TAG;
 }
 
-bool Any::IsDouble() {
+bool Any::IsDouble() const {
     uint64_t tmp = Any::data & DOUBLE_MASK;
     return tmp >= DOUBLE_LW && tmp <= DOUBLE_UP;
 }
 
-bool Any::IsPtr() {
+bool Any::IsPtr() const{
     return (Any::data & TAG_MASK) == PTR_TAG;
 }
 
+uint64_t Any::ToInt() const{
+    return Any::data & (~INT_TAG);
+}
+
+double Any::ToDouble() const {
+    uint64_t tmp = Any::data - BIAS;
+    double origin;
+    memcpy(&origin, &tmp, sizeof(double));
+    return origin;
+}
+
+void* Any::ToPtr() const {
+    return reinterpret_cast<void*>(Any::data);
+}
+
 // pass in a pointer and stores the "value" of wtvr type inside pointer
-void Any::Data(void* x) {
+void Any::Data(void* x) const {
     if (Any::IsInt()) {
-        *(uint64_t*)x = Any::data & (~INT_TAG);
+        *(uint64_t*)x = Any::ToInt();
         return;
     }
     if (Any::IsDouble()) {   
-        uint64_t tmp = Any::data - BIAS;
-        memcpy(x, &tmp, sizeof(double));
+        *(double*)x = Any::ToDouble();
         return;
     }
     if (Any::IsPtr()) {
-        *(uint64_t*)x = Any::data;
+        *(void**)x = Any::ToPtr();
         return;
     }
 }
 
-void Any::print() {
+void Any::print() const {
     if (Any::IsInt()) {
         printf("Int: %llu\n", Any::data & (~INT_TAG));
         return;
@@ -74,3 +88,32 @@ void Any::print() {
         return;
     }
 }
+
+bool Any::operator==(const Any& rhs) {
+    if (Any::IsInt() && rhs.IsInt()) {
+        return Any::ToInt() == rhs.ToInt();
+    }
+    if (Any::IsDouble() && rhs.IsDouble()) {
+        return Any::ToDouble() == rhs.ToDouble();
+    }
+    if (Any::IsPtr() && rhs.IsPtr()) {
+        return Any::ToPtr() == rhs.ToPtr();
+    }
+    return false;
+}
+bool Any::operator!=(const Any& rhs) {return !(*this == rhs);}
+bool Any::operator<(const Any& rhs) {
+    if (Any::IsInt() && rhs.IsInt()) {
+        return Any::ToInt() < rhs.ToInt();
+    }
+    if (Any::IsDouble() && rhs.IsDouble()) {
+        return Any::ToDouble() < rhs.ToDouble();
+    }
+    if (Any::IsPtr() && rhs.IsPtr()) {
+        return Any::ToPtr() < rhs.ToPtr();
+    }
+    return false;
+}
+bool Any::operator>(const Any& rhs) {return !(*this < rhs || *this == rhs);}
+bool Any::operator<=(const Any& rhs) {return *this < rhs || *this == rhs;}
+bool Any::operator>=(const Any& rhs) {return *this > rhs || *this == rhs;}

@@ -16,11 +16,26 @@ public:
     Any(double x);
     Any(void* x);
 
-    bool IsInt();
-    bool IsDouble();
-    bool IsPtr();
+    bool IsInt() const;
+    bool IsDouble() const;
+    bool IsPtr() const;
+    uint64_t ToInt() const;
+    double ToDouble() const;
+    void* ToPtr() const;
 
-    void Data(void* x);
+    void Data(void* x) const;
+    void print() const;
 
-    void print();
+    bool operator==(const Any& rhs);
+    bool operator!=(const Any& rhs);
+    bool operator<(const Any& rhs);
+    bool operator>(const Any& rhs);
+    bool operator<=(const Any& rhs);
+    bool operator>=(const Any& rhs);
+    Any operator+(const Any& rhs);
+    Any operator-(const Any& rhs);
+    Any operator*(const Any& rhs);
+    Any operator/(const Any& rhs);
+
+    
 };

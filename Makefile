@@ -1,5 +1,5 @@
 # Define the compiler
-CXX=g++ -m64
+CXX=g++
 
 # Define compiler flags
 CXXFLAGS=-O3 -Wall -g
