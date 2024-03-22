@@ -1,41 +1,33 @@
-#include <cstdint>
 #include <string>
+#pragma once
 
-class Any{
-public:
-    static uint64_t TAG_MASK;
-    static uint64_t BIAS;
-    static uint64_t INT_TAG;
-    static uint64_t DOUBLE_MASK;
-    static uint64_t DOUBLE_UP;
-    static uint64_t DOUBLE_LW;
-    static uint64_t PTR_TAG;
-    uint64_t data;
-
-    Any(uint64_t x);
-    Any(double x);
-    Any(void* x);
-
-    bool IsInt() const;
-    bool IsDouble() const;
-    bool IsPtr() const;
-    uint64_t ToInt() const;
-    double ToDouble() const;
-    void* ToPtr() const;
-
-    void Data(void* x) const;
-    void print() const;
-
-    bool operator==(const Any& rhs);
-    bool operator!=(const Any& rhs);
-    bool operator<(const Any& rhs);
-    bool operator>(const Any& rhs);
-    bool operator<=(const Any& rhs);
-    bool operator>=(const Any& rhs);
-    Any operator+(const Any& rhs);
-    Any operator-(const Any& rhs);
-    Any operator*(const Any& rhs);
-    Any operator/(const Any& rhs);
-
-    
+union AnyC{
+    int64_t integer;
+    double doub;
 };
+
+// PRECONDITION: 50-bits complement <=> Top 15 bits are all 0's or 1's
+// OCCUPY: 0xFFFC - 0xFFFF
+AnyC constructor(int64_t x);
+
+// PRECONDITION: Not NaN or Inf
+// OCCUPY: 0x0001 - 0x7FFF; 0x8001 - 0xFFF0
+AnyC constructor(double x);
+
+// PRECONDITION: Top 16 bits are 0
+AnyC constructor(void* x);
+
+// NOT IMPLEMENTED
+AnyC constructor(std::string x);
+
+bool is_int(AnyC x);
+bool is_double(AnyC x);
+bool is_ptr(AnyC x);
+bool is_string(AnyC x);
+
+int64_t to_int(AnyC x);
+double to_double(AnyC x);
+void* to_ptr(AnyC x);
+std::string to_string(AnyC x);
+
+// Operator overload

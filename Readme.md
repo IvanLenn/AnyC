@@ -1,10 +1,14 @@
-1. Do we only care about int / double / ptr?
+### Nan in C
+Nan: sign * 1 + exp * 11 + frac * 52
+Nan requirest exp = 2^12 - 1, and frac != 0
 
 After adding bias, consider top 16 bits:
 int: FFFC - FFFF
+FFF(1100) - FFF(1111)
 ptr: 0000
 normalized double: before bias, depending on the sign bits it contains:
 0000 - 7FEF and 8000 - FFEF
+0000 - 7F(1110)(1111)
 after bias:
 0001 - 7FF0 and 8001 - FFF0
 

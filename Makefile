@@ -2,13 +2,13 @@
 CXX=g++
 
 # Define compiler flags
-CXXFLAGS=-O3 -Wall -g
+CXXFLAGS=-O3 -Wall -g -std=c++17 -DDEBUG
 
 # Define the name of the executable
 TARGET=any
 
 # Specify the source files
-SOURCES=Any.cpp main.cpp
+SOURCES=any.cpp main.cpp
 
 # Define the object files from the source files
 OBJECTS=$(SOURCES:.cpp=.o)
